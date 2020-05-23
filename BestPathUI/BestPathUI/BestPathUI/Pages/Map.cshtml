@@ -1,0 +1,45 @@
+﻿@namespace BestPathUI.Pages
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta charset="utf-8" />
+    <title>BestPathUI</title>
+    <base href="~/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link href="css/site.css" rel="stylesheet" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+     
+      }
+     
+    </style>
+    <script async defer
+            type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAIztt-WDuygbYykfzV8akJ3DyR-jrhJRY">
+    </script>
+    <script type="text/javascript">
+        var map;
+        function initialize() {
+            var mapOptions = {
+                center: new google.maps.LatLng(48.209331, 16.381302),
+                zoom: 4,
+                
+            };
+            map = new google.maps.Map(document.getElementById("map-canvas"),
+                mapOptions);
+        }
+        google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+</head>
+<body>
+
+        <div id="map-canvas" style="position: center; width: 50%; height:50%; margin:auto; margin-top:50px">
+            </div>
+  
+</body>
+</html>

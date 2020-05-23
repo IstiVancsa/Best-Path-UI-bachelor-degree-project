@@ -1,0 +1,34 @@
+﻿@inherits LoginBase
+@page "/login"
+@layout AuthLayout
+
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-center">Login into your account</h2>
+            <EditForm Model="LoginModel" OnValidSubmit="LoginUser">
+                <RadzenCard>
+                    <DataAnnotationsValidator />
+
+                    <label class="mt-10">Email</label>
+                    <RadzenTextBox @bind-Value="LoginModel.Email"></RadzenTextBox>
+
+                    <label class="mt-10">Password</label>
+                    <RadzenTextBox @bind-Value="LoginModel.Password" Type="password"></RadzenTextBox>
+
+                    <ValidationSummary />
+                    @if (FailedLogin)
+                    {
+                        <label class="mt-10 red-text">@FailedLoginMessage</label>
+                    }
+                    <hr />
+                    <RadzenButton ButtonType="Radzen.ButtonType.Submit" Text="Login"
+                                  ButtonStyle="Radzen.ButtonStyle.Primary" class="btn-block m2-2" />
+                    <div class="text-center register-btn">
+                        <a href="/Register">
+                            You don't have an account ?<br />Go to the register page
+                        </a>
+                    </div>
+                </RadzenCard>
+            </EditForm>
+        </div>
+    </div>

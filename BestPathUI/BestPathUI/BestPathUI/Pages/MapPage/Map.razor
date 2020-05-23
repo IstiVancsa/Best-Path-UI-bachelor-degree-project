@@ -1,0 +1,156 @@
+﻿@page "/map"
+@inherits MapBase
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta charset="utf-8" />
+    <title>BestPathUI</title>
+    <base href="~/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link href="css/site.css" rel="stylesheet" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: inherit;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-title">Best Path</div>
+        <div id="map_canvas" class="canvas"></div>
+        <div class="row page-btns mt-20 mb-20">
+            <div class="col-md-12 text-center">
+                <button @onclick="@AddCity" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">Add City</button>
+
+                <button @onclick="@ShowRoute" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">Show Route</button>
+
+                <button @onclick="@SaveRoute" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">Save Route</button>
+
+                <button @onclick="@NewRoute" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">New Route</button>
+
+                <button @onclick="@GetRoutes" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">Get my routes</button>
+
+                <button @onclick="@GetUnsavedRoute" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">Get my unsaved route</button>
+            </div>
+        </div>
+
+        @if (this.LastRoutes.Cities.Count > 0)
+        {
+            <h3 class="text-center mt-20">Here are all your saved routes. Plase select one of them</h3>
+            <table class="table mt-20 mb-20">
+                <thead>
+                    <tr>
+                        <th>Date Saved</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var route in LastRoutes.Cities)
+                    {
+                        <tr>
+                            <td>@route.Item1</td>
+                            <td><button @onclick="@(x => RouteSelected(route))" class="btn btn-dark table-btn quick-add-btn">Select route</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+
+        @if (this.RestaurantSearches.Count > 0)
+        {
+            <h3 class="text-center mt-20">Here are couple of restaurants for you</h3>
+
+            <table class="table mt-20 mb-20">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Oppened</th>
+                        <th>Price Level</th>
+                        <th>rating</th>
+                        <th>Total Reviews</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var restaurant in RestaurantSearches)
+                    {
+                        <tr @onmouseover="@(x => ShowLocation(restaurant))" @onmouseout="@(x => HideLocation(restaurant))">
+                            <td>@restaurant.name</td>
+                            <td>@restaurant.formatted_address</td>
+                            <td>@restaurant.opening_hours.open_now</td>
+                            <td>@restaurant.price_level</td>
+                            <td>@restaurant.rating</td>
+                            <td>@restaurant.user_ratings_total</td>
+                            <td><button @onclick="@(x => RestaurantSelected(restaurant))" class="btn btn-dark table-btn quick-add-btn">Select restaurant</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        @if (this.MuseumSearches.Count > 0)
+        {
+            <h3 class="text-center mt-20">Here are couple of museums for you: </h3>
+            <table class="table mt-20">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Oppened</th>
+                        <th>Price Level</th>
+                        <th>rating</th>
+                        <th>Total Reviews</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var museum in MuseumSearches)
+                    {
+                        <tr @onmouseover="@(x => ShowLocation(museum))" @onmouseout="@(x => HideLocation(museum))">
+                            <th>@museum.name</th>
+                            <th>@museum.formatted_address</th>
+                            <th>@museum.opening_hours.open_now</th>
+                            <th>@museum.price_level</th>
+                            <th>@museum.rating</th>
+                            <th>@museum.user_ratings_total</th>
+                            <th><button @onclick="@(x => MuseumSelected(museum))" class="btn btn-dark table-btn quick-add-btn">Select museum</button></th>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        @if (ShowSuccessAlert_Prop)
+        {
+            <div class="alert alert-success" role="alert">
+                @SuccessAlertMessage
+            </div>
+        }
+
+        @if (ShowUnSuccessAlert_Prop)
+        {
+            <div class="alert alert-danger" role="alert">
+                @UnSuccessAlertMessage
+            </div>
+        }
+
+    </div>
+</body>
+</html>
+
+<BestPathUI.Pages.Components.AddCityDialog @ref="AddCityDialog" CloseEventCallBack="@AddCityDialog_OnDialogClose"></BestPathUI.Pages.Components.AddCityDialog>
+
+<style>
+    table {
+        overflow-y: scroll;
+        height: 200px;
+        display: block;
+    }
+</style>

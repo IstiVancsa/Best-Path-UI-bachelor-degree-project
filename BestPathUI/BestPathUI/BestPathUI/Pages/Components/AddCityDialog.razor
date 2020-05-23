@@ -1,0 +1,105 @@
+﻿@inherits AddCityDialogBase
+
+@if (ShowDialog)
+{
+    <div class="modal fade show d-block" id="exampleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content modal-background-color">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="titleLabel">Add City</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+
+
+                    <EditForm Model="@City" OnValidSubmit="@HandleValidSubmit">
+
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div>
+                            <InputNumber id="lat_hidden" @bind-Value="@City.Location.lat" style = "display: none"></InputNumber>
+                            <InputNumber id="lng_hidden" @bind-Value="@City.Location.lng" style = "display: none"></InputNumber>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cityName">CityName: </label>
+                            <InputText id="city_search" class="form-control" @bind-Value="@City.CityName" type="text" placeholder="Enter the City Name"></InputText>
+                            <ValidationMessage For="@(() => City.CityName)" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="destinationPoint" class="label-checkbox">DestinationPoint: </label>
+                            <InputCheckbox id="destinationPoint" class="form-control checkbox" @bind-Value="@City.DestinationPoint"></InputCheckbox>
+                            <ValidationMessage For="@(() => City.DestinationPoint)" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="startPoint" class="label-checkbox">StartPoint: </label>
+                            <InputCheckbox id="startPoint" class="form-control checkbox" @bind-Value="@City.StartPoint"></InputCheckbox>
+                            <ValidationMessage For="@(() => City.StartPoint)" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="needsMuseum" class="label-checkbox">Needs Museum: </label>
+                            <InputCheckbox id="needsMuseum" class="form-control checkbox" @bind-Value="@City.NeedsMuseum" onclick="enableTextbox('needsMuseum','museum_search')"></InputCheckbox>
+                            <ValidationMessage For="@(() => City.NeedsMuseum)" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="museumType">Museum Type: </label>
+                            <select id="museum_search" class="form-control" @onchange="@MuseumClicked" disabled>
+                                <option value="">-- Select Museum --</option>
+                                @foreach (var museumType in MuseumTypes)
+                                {
+                                    <option value="@museumType">@museumType</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="startPoint" class="label-checkbox">Needs Restaurant: </label>
+                            <InputCheckbox id="needsRestaurant" class="form-control checkbox" @bind-Value="@City.NeedsRestaurant" onclick="enableTextbox('needsRestaurant','restaurant_search')"></InputCheckbox>
+                            <ValidationMessage For="@(() => City.NeedsRestaurant)" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="restaurantType">Restaurant Type: </label>
+                            <select id="restaurant_search" class="form-control" @onchange="@RestaurantClicked" disabled>
+                                <option value="">-- Select Restaurant --</option>
+                                @foreach (var restaurantType in RestaurantTypes)
+                                {
+                                    <option value="@restaurantType">@restaurantType</option>
+                                }
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save City</button>
+                        <a class="btn btn-outline-primary"style="border-color: #44494e;!important" @onclick="@Close">Close</a>
+                    </EditForm>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<style>
+    .pac-container {
+        background-color: #FFF;
+        z-index: 9999;
+        position: fixed;
+        display: inline-block;
+        float: left;
+    }
+
+    .modal {
+        z-index: 2000;
+    }
+
+    .modal-backdrop {
+        z-index: 1000;
+    }
+</style>
+
