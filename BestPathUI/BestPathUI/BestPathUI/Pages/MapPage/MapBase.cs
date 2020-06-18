@@ -31,7 +31,7 @@ namespace BestPathUI.Pages.MapPage
         public IList<GoogleTextSearchDTO> MuseumSearches { get; set; } = new List<GoogleTextSearchDTO>();
         [Inject]
         public NavigationManager NavigationManager { get; set; }
-        public GetLastRouteResult LastRoutes { get; set; }
+        public GetRoutesResultDTO LastRoutes { get; set; }
         public bool ShowSuccessAlert_Prop { get; set; }
         public bool ShowUnSuccessAlert_Prop { get; set; }
         public string SuccessAlertMessage { get; set; }
@@ -41,7 +41,7 @@ namespace BestPathUI.Pages.MapPage
         protected override async Task OnInitializedAsync()
         {
             Cities = new List<City>();
-            LastRoutes = new GetLastRouteResult();
+            LastRoutes = new GetRoutesResultDTO();
             SuccessAlertTimer = new Timer(3000);
             SuccessAlertTimer.Elapsed += new ElapsedEventHandler((Object source, ElapsedEventArgs e) =>
             {
@@ -219,8 +219,9 @@ namespace BestPathUI.Pages.MapPage
             this.RestaurantSearches = map_AddCity.RestaurantSearches;
             this.MuseumSearches = map_AddCity.MuseumSearches;
             map_AddCity.City.CityOrder = this.Cities.Count;
+            map_AddCity.City.UserId = await LocalStorageManagerService.GetPermanentItemAsync("UserId");
+
             this.Cities.Add(map_AddCity.City);
-            this.Cities[this.Cities.Count - 1].UserId = await LocalStorageManagerService.GetPermanentItemAsync("UserId");
             if (this.MuseumSearches.Count == 0 && this.RestaurantSearches.Count == 0)
             {
                 var serializedCities = JsonConvert.SerializeObject(this.Cities);

@@ -5,10 +5,10 @@ using System.Linq;
 
 namespace Models.DTO
 {
-    public class GetLastRouteResult : BaseTokenizedDTO
+    public class GetRoutesResultDTO : BaseTokenizedDTO
     {
         public List<Tuple<DateTime, List<City>>> Routes { get; set; }
-        public GetLastRouteResult()
+        public GetRoutesResultDTO()
         {
             this.Routes = new List<Tuple<DateTime, List<City>>>();
         }

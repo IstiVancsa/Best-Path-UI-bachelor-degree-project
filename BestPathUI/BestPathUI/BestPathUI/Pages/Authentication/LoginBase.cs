@@ -33,6 +33,7 @@ namespace BestPathUI.Pages.Authentication
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             await LocalStorageManagerService.DeletePermanentItemAsync("Token");
+            await LocalStorageManagerService.DeletePermanentItemAsync("UserId");
         }
         public async Task LoginUser()
         {
