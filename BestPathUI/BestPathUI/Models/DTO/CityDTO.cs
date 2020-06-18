@@ -15,5 +15,6 @@ namespace Models.DTO
         public string MuseumType { get; set; }
         public LocationDTO Location { get; set; }
         public string UserId { get; set; }
+        public int CityOrder { get; set; }
     }
 }

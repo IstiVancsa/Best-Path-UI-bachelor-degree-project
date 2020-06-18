@@ -23,6 +23,7 @@ namespace Models.Models
         public GoogleTextSearchDTO SelectedRestaurant { get; set; }
         public GoogleTextSearchDTO SelectedMuseum { get; set; }
         public string UserId { get; set; }
+        public int CityOrder { get; set; }
 
         public new CityDTO GetDTO()
         {
@@ -37,7 +38,8 @@ namespace Models.Models
                 RestaurantType = this.RestaurantType,
                 StartPoint = this.StartPoint,
                 Location = this.Location,
-                UserId = this.UserId
+                UserId = this.UserId,
+                CityOrder = this.CityOrder
             };
         }
         public City()

@@ -21,7 +21,7 @@ namespace BestPathUI.Pages.Components
         public List<string> RestaurantTypes { get; set; }
         public List<string> MuseumTypes { get; set; }
         [Parameter]//now we can cann it as parameter in razor file
-        public EventCallback<Map_AddCity> CloseEventCallBack { get; set; }//we are sending a message from adduserdialog to users overview
+        public EventCallback<Map_AddCity> CloseEventCallBack { get; set; }//we are sending a message from addcitydialog to maps overview
 
         public bool ShowDialog { get; set; }
         public static LocationDTO Location { get; set; }
@@ -40,7 +40,8 @@ namespace BestPathUI.Pages.Components
                 "Romanian",
                 "France",
                 "American",
-                "Chinese"
+                "Chinese",
+                "All"
             };
 
             MuseumTypes = new List<string>
@@ -50,7 +51,8 @@ namespace BestPathUI.Pages.Components
                 "Natural Science",
                 "History",
                 "Art",
-                "Virtual"
+                "Virtual",
+                "All"
             };
         }
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -91,12 +93,18 @@ namespace BestPathUI.Pages.Components
 
         protected void RestaurantClicked(ChangeEventArgs restaurantEvent)
         {
-            this.RestaurantType = restaurantEvent.Value.ToString();
+            if (string.Equals(restaurantEvent.Value.ToString(), "All"))
+                this.RestaurantType = "";
+            else
+                this.RestaurantType = "+" + restaurantEvent.Value.ToString();
         }
 
         protected void MuseumClicked(ChangeEventArgs museumEvent)
         {
-            this.MuseumType = museumEvent.Value.ToString();
+            if (string.Equals(museumEvent.Value.ToString(), "All"))
+                this.MuseumType = "";
+            else
+                this.MuseumType = "+" + museumEvent.Value.ToString();
         }
 
         protected async Task HandleValidSubmit()
@@ -106,11 +114,11 @@ namespace BestPathUI.Pages.Components
             Map_AddCity map_AddCity = new Map_AddCity();
             if (this.City.NeedsMuseum)
             {
-                map_AddCity.MuseumSearches = (await GoogleDataService.TextSearch(MuseumType + "+Museum", this.City.Location)).results;
+                map_AddCity.MuseumSearches = (await GoogleDataService.TextSearch(MuseumType + "Museum", this.City.Location)).results;
             }
             if (this.City.NeedsRestaurant)
             {
-                map_AddCity.RestaurantSearches = (await GoogleDataService.TextSearch(RestaurantType + "+Restaurant", this.City.Location)).results;
+                map_AddCity.RestaurantSearches = (await GoogleDataService.TextSearch(RestaurantType + "Restaurant", this.City.Location)).results;
             }
 
             map_AddCity.City = this.City;

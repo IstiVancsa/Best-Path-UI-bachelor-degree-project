@@ -23,7 +23,7 @@ namespace Services
         public async Task<GoogleTextSearchResultsDTO> TextSearch(string searchText, LocationDTO locationDTO)
         {
             var item = new GoogleTextSearchResultsDTO();
-            var uri = new Uri(Configuration["APPPaths:GoogleSearch"] + searchText + "&sensor=true&location=" + locationDTO.lat.ToString() + ",%20" + locationDTO.lng.ToString() + "&radius=0.1&key=AIzaSyAIztt-WDuygbYykfzV8akJ3DyR-jrhJRY");
+            var uri = new Uri(Configuration["APPPaths:GoogleSearch"] + searchText + "&location=" + locationDTO.lat.ToString() + "%2C" + locationDTO.lng.ToString() + "&radius=5000&key=AIzaSyAIztt-WDuygbYykfzV8akJ3DyR-jrhJRY");
             try
             {
                 var response = await this._httpClient.GetAsync(uri);
@@ -31,6 +31,7 @@ namespace Services
                 {
                     var content = await response.Content.ReadAsStringAsync();
                     item = JsonConvert.DeserializeObject<GoogleTextSearchResultsDTO>(content);
+                    item.results = item.results.Where(x => Math.Abs(x.geometry.location.lat - locationDTO.lat) + Math.Abs(x.geometry.location.lng - locationDTO.lng) < 0.1).ToList();
                 }
             }
             catch (Exception ex)

@@ -7,10 +7,10 @@ namespace Models.DTO
 {
     public class GetLastRouteResult : BaseTokenizedDTO
     {
-        public List<Tuple<DateTime, List<City>>> Cities { get; set; }
+        public List<Tuple<DateTime, List<City>>> Routes { get; set; }
         public GetLastRouteResult()
         {
-            this.Cities = new List<Tuple<DateTime, List<City>>>();
+            this.Routes = new List<Tuple<DateTime, List<City>>>();
         }
     }
 }

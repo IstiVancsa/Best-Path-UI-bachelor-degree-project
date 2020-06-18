@@ -28,11 +28,13 @@
             <div class="col-md-12 text-center">
                 <button @onclick="@AddCity" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">Add City</button>
 
-                <button @onclick="@ShowRoute" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">Show Route</button>
+                <button @onclick="@(x => ShowRoute(false))" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">Show Unoptimized Route</button>
+
+                <button @onclick="@(x => ShowRoute(true))" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">Show Optimized Route</button>
 
                 <button @onclick="@SaveRoute" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">Save Route</button>
 
-                <button @onclick="@NewRoute" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">New Route</button>
+                <button @onclick="@AtteptToDeleteRoute" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">New Route</button>
 
                 <button @onclick="@GetRoutes" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">Get my routes</button>
 
@@ -40,7 +42,7 @@
             </div>
         </div>
 
-        @if (this.LastRoutes.Cities.Count > 0)
+        @if (this.LastRoutes.Routes.Count > 0)
         {
             <h3 class="text-center mt-20">Here are all your saved routes. Plase select one of them</h3>
             <table class="table mt-20 mb-20">
@@ -51,7 +53,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var route in LastRoutes.Cities)
+                    @foreach (var route in LastRoutes.Routes)
                     {
                         <tr>
                             <td>@route.Item1</td>
@@ -146,6 +148,7 @@
 </html>
 
 <BestPathUI.Pages.Components.AddCityDialog @ref="AddCityDialog" CloseEventCallBack="@AddCityDialog_OnDialogClose"></BestPathUI.Pages.Components.AddCityDialog>
+<BestPathUI.Pages.Components.DeleteRouteDialog @ref="DeleteRouteDialog" CloseEventCallBack="@NewRoute"></BestPathUI.Pages.Components.DeleteRouteDialog>
 
 <style>
     table {

@@ -24,7 +24,7 @@ function initializeMap() {
     mapCounter++;
 }
 
-function showRoute(origin, destination, wayPoints) {
+function showRoute(origin, destination, wayPoints, optimize) {
     directionsService = new google.maps.DirectionsService();
     directionsRenderer = new google.maps.DirectionsRenderer({
         draggable: true,
@@ -42,7 +42,7 @@ function showRoute(origin, destination, wayPoints) {
         origin: new google.maps.LatLng(origin.lat, origin.lng),
         destination: new google.maps.LatLng(destination.lat, destination.lng),
         waypoints: javascriptWayPoints,
-        optimizeWaypoints: false,
+        optimizeWaypoints: optimize,
         travelMode: 'DRIVING'
     }, function (response, status) {
         if (status == "OK") {
@@ -111,4 +111,8 @@ function removeDirections() {
         marker.setMap(null);
     if (typeof directionsRenderer != "undefined")
         directionsRenderer.setMap(null);
+}
+
+function showAlert(message) {
+    return alert(message);
 }
