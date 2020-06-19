@@ -65,7 +65,42 @@ namespace BestPathUI.Pages.MapPage
             });
         }
         private bool _mapInitialized { get; set; } = false;
-
+        protected int RouteDistance { get; set; }
+        protected int RouteDuration { get; set; }
+        protected string ProcessedRouteDistance
+        {
+            get
+            {
+                if (RouteDistance < 1000)
+                    return RouteDistance.ToString() + " m";
+                else
+                if (RouteDistance < 2000)
+                    return (Convert.ToInt32(RouteDistance / 1000)).ToString() + " km " + (RouteDistance % 1000).ToString() + " m";
+                else
+                    return (Convert.ToInt32(RouteDistance / 1000)).ToString() + " kms " + (RouteDistance % 1000).ToString() + " m";
+            }
+        }
+        protected string ProcessedRouteDuration
+        {
+            get
+            {
+                if (RouteDuration < 60)
+                    return RouteDuration.ToString() + " s";
+                else
+               if (RouteDuration < 120)
+                    return (Convert.ToInt32(RouteDuration / 60)).ToString() + " min " + (RouteDuration % 60).ToString() + " s";
+                else
+               if (RouteDuration < 3600)
+                    return (Convert.ToInt32(RouteDuration / 60)).ToString() + " mins " + (RouteDuration % 60).ToString() + " s";
+                else
+                   if (RouteDuration < 7200)
+                    return (Convert.ToInt32(RouteDuration / 3600)).ToString() + " hour " + (Convert.ToInt32(RouteDuration % 3600 / 60)).ToString() + " mins " + (RouteDuration % 60).ToString() + " s";
+                else
+                    return (Convert.ToInt32(RouteDuration / 3600)).ToString() + " hours " + (Convert.ToInt32(RouteDuration % 3600 / 60)).ToString() + " mins " + (RouteDuration % 60).ToString() + " s";
+            }
+        }
+        private int _segmentsCount { get; set; }
+        private GoogleDistanceDTO _lastdistance { get; set; }
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (!_mapInitialized)
@@ -98,6 +133,24 @@ namespace BestPathUI.Pages.MapPage
             else
                 ShowUnSuccessAlert("You need to select a destination point before showing the path");
         }
+
+        protected async Task ShowAStarRoute()
+        {
+            await JSRuntime.InvokeVoidAsync("removeDirections");
+            var startPoint = GetStartPointGeoCoordinates();
+            var endPoint = GetDestinationPointGeoCoordinates();
+            if (startPoint != null && endPoint != null)
+            {
+                var objref = DotNetObjectReference.Create(this);
+                for (int i = 1; i < Cities.Count; i++)
+                    await JSRuntime.InvokeVoidAsync("getDistance", objref, Cities[i - 1].Location, Cities[i].Location);
+            }
+            else
+                if (startPoint == null)
+                ShowUnSuccessAlert("You need to select a start point before showing the path");
+            else
+                ShowUnSuccessAlert("You need to select a destination point before showing the path");
+        }
         protected void AtteptToDeleteRoute()
         {
             DeleteRouteDialog.Show();
@@ -106,6 +159,8 @@ namespace BestPathUI.Pages.MapPage
         protected async Task NewRoute()
         {
             this.Cities.Clear();
+            RouteDistance = 0;
+            RouteDuration = 0;
             await JSRuntime.InvokeVoidAsync("removeDirections");
             await LocalStorageManagerService.DeletePermanentItemAsync("Cities");
             ShowSuccessAlert("Here we go! Now you can start all over again!");
@@ -129,7 +184,7 @@ namespace BestPathUI.Pages.MapPage
             var userId = await LocalStorageManagerService.GetPermanentItemAsync("UserId");
             CityFilter cityFilter = new CityFilter { UserId = userId };
             var result = (await CitiesDataService.GetRoutes(cityFilter.GetFilter()));
-            if (result.Routes.Count > 0)
+            if (result?.Routes.Count > 0)
                 LastRoutes = result;
             else
                 ShowUnSuccessAlert("You have no routes saved in our DB!");
@@ -198,6 +253,8 @@ namespace BestPathUI.Pages.MapPage
 
         protected async Task RouteSelected(Tuple<DateTime, List<City>> selectedRoute)
         {
+            RouteDistance = 0;
+            RouteDuration = 0;
             this.Cities = selectedRoute.Item2;
             this.LastRoutes.Routes.Clear();
             await this.ShowRoute();
@@ -237,7 +294,7 @@ namespace BestPathUI.Pages.MapPage
             }
             else
                 if (this.RestaurantSearches.Count == 0 && map_AddCity.City.NeedsRestaurant)
-                    ShowUnSuccessAlert("Sorry! We couldn't find any restaurants in your area");
+                ShowUnSuccessAlert("Sorry! We couldn't find any restaurants in your area");
             ShowSuccessAlert("The city was successfully added to the route!");
         }
 
@@ -245,14 +302,18 @@ namespace BestPathUI.Pages.MapPage
         {
             var startLocation = Cities.Where(x => x.StartPoint)
                          .FirstOrDefault();
-
-            if (startLocation.SelectedRestaurant != null)
-                return startLocation.SelectedRestaurant.geometry.location;
-            else
-                if (startLocation.SelectedMuseum != null)
+            if (startLocation != null)
+            {
+                if (startLocation.SelectedRestaurant != null)
+                    return startLocation.SelectedRestaurant.geometry.location;
+                else
+                    if (startLocation.SelectedMuseum != null)
                     return startLocation.SelectedMuseum.geometry.location;
                 else
                     return startLocation.Location;
+            }
+            else
+                return null;
         }
 
         public LocationDTO GetDestinationPointGeoCoordinates()
@@ -260,17 +321,18 @@ namespace BestPathUI.Pages.MapPage
             var destinationLocation = Cities.Where(x => x.DestinationPoint)
                          .FirstOrDefault();
 
-            LocationDTO finalCoordinate = new LocationDTO();
-
-            if (destinationLocation.SelectedRestaurant != null)
-                finalCoordinate = destinationLocation.SelectedRestaurant.geometry.location;
-            else
+            if (destinationLocation != null)
+            {
+                if (destinationLocation.SelectedRestaurant != null)
+                    return destinationLocation.SelectedRestaurant.geometry.location;
+                else
                 if (destinationLocation.SelectedMuseum != null)
-                finalCoordinate = destinationLocation.SelectedMuseum.geometry.location;
+                    return destinationLocation.SelectedMuseum.geometry.location;
+                else
+                    return destinationLocation.Location;
+            }
             else
-                finalCoordinate = destinationLocation.Location;
-
-            return finalCoordinate;
+                return null;
         }
 
         public IList<LocationDTO> GetIntermediatePointsGeoCoordinates()
@@ -288,6 +350,28 @@ namespace BestPathUI.Pages.MapPage
                     finalCoordinates.Add(city.Location);
             }
             return finalCoordinates;
+        }
+
+        [JSInvokable]
+        public void SetGoogleDistance(GoogleDistanceDTO distance)
+        {
+            if (_segmentsCount % 2 == 0)
+                _lastdistance = distance;
+            else
+            {
+                if (_lastdistance.distance.value > distance.distance.value)
+                {
+                    RouteDistance += distance.distance.value;
+                    RouteDuration += distance.duration.value;
+                }
+                else
+                {
+                    RouteDistance += _lastdistance.distance.value;
+                    RouteDuration += _lastdistance.duration.value;
+                }
+            }
+            _segmentsCount++;
+            StateHasChanged();
         }
     }
 }

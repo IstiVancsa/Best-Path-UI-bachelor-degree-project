@@ -3,6 +3,7 @@ var city_initialized = false;
 var marker;
 var directionsService;
 var directionsRenderer;
+var lastObjRef;
 
 function createMap() {
     google.maps.event.addDomListener(window, 'load', initializeMap);
@@ -81,9 +82,42 @@ function initializeAutocompletes() {
 
         DotNet.invokeMethodAsync('BestPathUI', 'SetLocation', location);
 
-        input.value = place.name;
+        input.value = place.formatted_address;
         city_initialized = true;
     });
+}
+
+function getDistance(objref, origin, destination) {
+    lastObjRef = objref;
+    var distanceServiceWithHighWays = new google.maps.DistanceMatrixService();
+    var distanceServiceWithOutHighWays = new google.maps.DistanceMatrixService();
+    distanceServiceWithHighWays.getDistanceMatrix({
+        origins: [origin],
+        destinations: [destination],
+        travelMode: google.maps.TravelMode.DRIVING,
+        unitSystem: google.maps.UnitSystem.METRIC,
+        avoidHighways: false,
+        avoidTolls: false
+    }, withHighWaysCallback);
+
+    distanceServiceWithOutHighWays.getDistanceMatrix({
+        origins: [origin],
+        destinations: [destination],
+        travelMode: google.maps.TravelMode.DRIVING,
+        unitSystem: google.maps.UnitSystem.METRIC,
+        avoidHighways: true,
+        avoidTolls: false
+    }, withOutHighWaysCallback);
+}
+
+function withHighWaysCallback(response, status) {
+    console.log(response);
+    lastObjRef.invokeMethodAsync('SetGoogleDistance', response.rows[0].elements[0]);
+}
+
+function withOutHighWaysCallback(response, status) {
+    console.log(response.rows[0].elements[0]);
+    lastObjRef.invokeMethodAsync('SetGoogleDistance', response.rows[0].elements[0]);
 }
 
 function enableTextbox(chkId, txtId) {
