@@ -246,17 +246,13 @@ namespace BestPathUI.Pages.MapPage
             var startLocation = Cities.Where(x => x.StartPoint)
                          .FirstOrDefault();
 
-            LocationDTO finalCoordinate = new LocationDTO();
-
             if (startLocation.SelectedRestaurant != null)
-                finalCoordinate = startLocation.SelectedRestaurant.geometry.location;
+                return startLocation.SelectedRestaurant.geometry.location;
             else
                 if (startLocation.SelectedMuseum != null)
-                    finalCoordinate = startLocation.SelectedMuseum.geometry.location;
+                    return startLocation.SelectedMuseum.geometry.location;
                 else
-                    finalCoordinate = startLocation.Location;
-
-            return finalCoordinate;
+                    return startLocation.Location;
         }
 
         public LocationDTO GetDestinationPointGeoCoordinates()
