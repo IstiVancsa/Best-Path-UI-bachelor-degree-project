@@ -87,6 +87,18 @@ function initializeAutocompletes() {
 }
 
 function enableTextbox(chkId, txtId) {
+    if (document.getElementById("startPoint").checked || document.getElementById("destinationPoint").checked) {
+        if (chkId !== "needsRestaurant") {
+            if (document.getElementById("needsRestaurant").checked) {
+                document.getElementById(chkId).checked = false;
+            }
+        }
+        else
+            if (document.getElementById("needsMuseum").checked) {
+                document.getElementById(chkId).checked = false;
+            }
+    }
+
     if (document.getElementById(chkId).checked) {
         if (city_initialized == true && document.getElementById('city_search').value != '')
             document.getElementById(txtId).disabled = false;

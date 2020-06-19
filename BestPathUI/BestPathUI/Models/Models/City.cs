@@ -53,8 +53,8 @@ namespace Models.Models
             RestaurantType = "";
             StartPoint = false;
             Location = new LocationDTO();
-            SelectedMuseum = new GoogleTextSearchDTO();
-            SelectedRestaurant = new GoogleTextSearchDTO();
+            SelectedMuseum = null;
+            SelectedRestaurant = null;
             UserId = "";
         }
     }

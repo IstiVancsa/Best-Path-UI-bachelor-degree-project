@@ -243,23 +243,55 @@ namespace BestPathUI.Pages.MapPage
 
         public LocationDTO GetStartPointGeoCoordinates()
         {
-            return Cities.Where(x => x.StartPoint)
-                         .Select(x => x.Location)
+            var startLocation = Cities.Where(x => x.StartPoint)
                          .FirstOrDefault();
+
+            LocationDTO finalCoordinate = new LocationDTO();
+
+            if (startLocation.SelectedRestaurant != null)
+                finalCoordinate = startLocation.SelectedRestaurant.geometry.location;
+            else
+                if (startLocation.SelectedMuseum != null)
+                    finalCoordinate = startLocation.SelectedMuseum.geometry.location;
+                else
+                    finalCoordinate = startLocation.Location;
+
+            return finalCoordinate;
         }
 
         public LocationDTO GetDestinationPointGeoCoordinates()
         {
-            return Cities.Where(x => x.DestinationPoint)
-                         .Select(x => x.Location)
+            var destinationLocation = Cities.Where(x => x.DestinationPoint)
                          .FirstOrDefault();
+
+            LocationDTO finalCoordinate = new LocationDTO();
+
+            if (destinationLocation.SelectedRestaurant != null)
+                finalCoordinate = destinationLocation.SelectedRestaurant.geometry.location;
+            else
+                if (destinationLocation.SelectedMuseum != null)
+                finalCoordinate = destinationLocation.SelectedMuseum.geometry.location;
+            else
+                finalCoordinate = destinationLocation.Location;
+
+            return finalCoordinate;
         }
 
         public IList<LocationDTO> GetIntermediatePointsGeoCoordinates()
         {
-            return Cities.Where(x => !x.DestinationPoint && !x.StartPoint)
-                         .Select(x => x.Location)
+            var intermediateCities = Cities.Where(x => !x.DestinationPoint && !x.StartPoint)
                          .ToList();
+            IList<LocationDTO> finalCoordinates = new List<LocationDTO>();
+            foreach (var city in intermediateCities)
+            {
+                if (city.SelectedRestaurant != null)
+                    finalCoordinates.Add(city.SelectedRestaurant.geometry.location);
+                if (city.SelectedMuseum != null)
+                    finalCoordinates.Add(city.SelectedMuseum.geometry.location);
+                if (city.SelectedRestaurant == null && city.SelectedMuseum == null)
+                    finalCoordinates.Add(city.Location);
+            }
+            return finalCoordinates;
         }
     }
 }
