@@ -16,5 +16,6 @@ namespace Models.DTO
         public LocationDTO Location { get; set; }
         public string UserId { get; set; }
         public int CityOrder { get; set; }
+        public DateTime ArrivingTime { get; set; }
     }
 }
