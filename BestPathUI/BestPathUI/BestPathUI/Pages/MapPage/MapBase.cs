@@ -101,6 +101,7 @@ namespace BestPathUI.Pages.MapPage
         }
         private int _segmentsCount { get; set; }
         private GoogleDistanceDTO _lastdistance { get; set; }
+        public bool AStarRoute { get; set; } = false;
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (!_mapInitialized)
@@ -116,7 +117,7 @@ namespace BestPathUI.Pages.MapPage
 
         protected void AddCity()
         {
-            AddCityDialog.Show();
+            AddCityDialog.Show(AStarRoute);
         }
 
         protected async Task ShowRoute(bool getOptimizedRoute = false)
@@ -151,7 +152,7 @@ namespace BestPathUI.Pages.MapPage
             else
                 ShowUnSuccessAlert("You need to select a destination point before showing the path");
         }
-        protected void AtteptToDeleteRoute()
+        protected void AttemptToDeleteRoute()
         {
             DeleteRouteDialog.Show();
         }

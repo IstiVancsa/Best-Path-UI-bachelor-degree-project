@@ -30,6 +30,9 @@ namespace BestPathUI.Pages.Components
         private bool _autocompleteInitialized { get; set; } = false;
         public string RestaurantType { get; set; }
         public string MuseumType { get; set; }
+        public bool AStarCity { get; set; }
+        private string _hourSelected { get; set; }
+        private string _minuteSelected { get; set; }
 
         protected override void OnInitialized()
         {
@@ -63,9 +66,10 @@ namespace BestPathUI.Pages.Components
                 await JSRuntime.InvokeVoidAsync("initializeAutocompletes");
             }
         }
-        public void Show()
+        public void Show(bool aStarCity = false)
         {
             ResetDialog();
+            AStarCity = aStarCity;
             ShowDialog = true;
             StateHasChanged();
         }
@@ -87,8 +91,23 @@ namespace BestPathUI.Pages.Components
                 NeedsMuseum = false,
                 NeedsRestaurant = false,
                 RestaurantType = "",
-                StartPoint = false
+                StartPoint = false,
+                ArrivingTime = DateTime.Now
             };
+        }
+
+        protected void SaveDate()
+        {
+            this.City.ArrivingTime = new DateTime(
+                this.City.ArrivingTime.Year,
+                this.City.ArrivingTime.Month,
+                this.City.ArrivingTime.Day,
+                Convert.ToInt32(this._hourSelected),
+                Convert.ToInt32(this._minuteSelected),
+                0,
+                0,
+                this.City.ArrivingTime.Kind
+                );
         }
 
         protected void RestaurantClicked(ChangeEventArgs restaurantEvent)
@@ -105,6 +124,16 @@ namespace BestPathUI.Pages.Components
                 this.MuseumType = "";
             else
                 this.MuseumType = "+" + museumEvent.Value.ToString();
+        }
+
+        protected void HourClicked(ChangeEventArgs hourEvent)
+        {
+            _hourSelected = hourEvent.Value.ToString();
+        }
+
+        protected void MinuteClicked(ChangeEventArgs minuteEvent)
+        {
+            _minuteSelected = minuteEvent.Value.ToString();
         }
 
         protected async Task HandleValidSubmit()

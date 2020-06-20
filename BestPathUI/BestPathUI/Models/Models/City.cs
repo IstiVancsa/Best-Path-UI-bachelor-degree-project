@@ -17,6 +17,7 @@ namespace Models.Models
         public bool StartPoint { get; set; }
         public bool NeedsRestaurant { get; set; }
         public string RestaurantType { get; set; }
+        public DateTime ArrivingTime { get; set; }
         public bool NeedsMuseum { get; set; }
         public string MuseumType { get; set; }
         public LocationDTO Location { get; set; }
@@ -56,6 +57,7 @@ namespace Models.Models
             SelectedMuseum = null;
             SelectedRestaurant = null;
             UserId = "";
+            ArrivingTime = DateTime.Now;
         }
     }
 }

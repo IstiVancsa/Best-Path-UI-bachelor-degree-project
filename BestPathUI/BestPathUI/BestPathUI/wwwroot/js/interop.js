@@ -111,34 +111,43 @@ function getDistance(objref, origin, destination) {
 }
 
 function withHighWaysCallback(response, status) {
-    console.log(response);
     lastObjRef.invokeMethodAsync('SetGoogleDistance', response.rows[0].elements[0]);
 }
 
 function withOutHighWaysCallback(response, status) {
-    console.log(response.rows[0].elements[0]);
     lastObjRef.invokeMethodAsync('SetGoogleDistance', response.rows[0].elements[0]);
 }
 
 function enableTextbox(chkId, txtId) {
-    if (document.getElementById("startPoint").checked || document.getElementById("destinationPoint").checked) {
-        if (chkId !== "needsRestaurant") {
-            if (document.getElementById("needsRestaurant").checked) {
-                document.getElementById(chkId).checked = false;
-            }
+    let forceUncked = false;
+    if (chkId !== "needsRestaurant") {
+        if (document.getElementById("needsRestaurant").checked) {
+            document.getElementById(chkId).checked = false;
+            forceUncked = true;
         }
-        else
-            if (document.getElementById("needsMuseum").checked) {
-                document.getElementById(chkId).checked = false;
-            }
-    }
-
-    if (document.getElementById(chkId).checked) {
-        if (city_initialized == true && document.getElementById('city_search').value != '')
-            document.getElementById(txtId).disabled = false;
     }
     else
-        document.getElementById(txtId).disabled = true;
+        if (document.getElementById("needsMuseum").checked) {
+            document.getElementById(chkId).checked = false;
+            forceUncked = true;
+        }
+
+    if (document.getElementById(chkId).checked) {
+        if (city_initialized == true && document.getElementById('city_search').value != '') {
+            document.getElementById(txtId).disabled = false;
+            document.getElementById("hourSelect").disabled = false;
+            document.getElementById("pointArrive").disabled = false;
+            document.getElementById("minuteSelect").disabled = false;
+        }
+    }
+    else {
+        if (!forceUncked) {
+            document.getElementById(txtId).disabled = true;
+            document.getElementById("hourSelect").disabled = true;
+            document.getElementById("minuteSelect").disabled = true;
+            document.getElementById("pointArrive").disabled = true;
+        }
+    }
 }
 
 function showLocation(location) {

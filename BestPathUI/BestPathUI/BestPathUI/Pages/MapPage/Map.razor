@@ -23,6 +23,10 @@
 <body>
     <div class="container">
         <div class="page-title">Best Path</div>
+        <div>
+            <label for="needsAStarRoute" class="label-checkbox">Use A* to create route: </label>
+            <input type="checkbox" id="needsAStarRoute" class="checkbox" @bind="@AStarRoute" />
+        </div>
         <p>Distance: @ProcessedRouteDistance</p>
         <p>Duration: @ProcessedRouteDuration</p>
         <div id="map_canvas" class="canvas"></div>
@@ -38,7 +42,7 @@
 
                 <button @onclick="@SaveRoute" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">Save Route</button>
 
-                <button @onclick="@AtteptToDeleteRoute" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">New Route</button>
+                <button @onclick="@AttemptToDeleteRoute" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">New Route</button>
 
                 <button @onclick="@GetRoutes" class="btn btn-dark table-btn quick-add-btn buton canvas-btn">Get my routes</button>
 
