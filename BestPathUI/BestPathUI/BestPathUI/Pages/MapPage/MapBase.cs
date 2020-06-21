@@ -1,4 +1,5 @@
 ﻿using BestPathUI.Pages.Components;
+using Bussiness;
 using Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -138,19 +139,18 @@ namespace BestPathUI.Pages.MapPage
         protected async Task ShowAStarRoute()
         {
             await JSRuntime.InvokeVoidAsync("removeDirections");
-            var startPoint = GetStartPointGeoCoordinates();
-            var endPoint = GetDestinationPointGeoCoordinates();
-            if (startPoint != null && endPoint != null)
+
+            var result = await AStarAlgorithm.GetOrderedCities(this.Cities, this.JSRuntime, DateTime.Now);
+
+            if (result != null)
             {
-                var objref = DotNetObjectReference.Create(this);
-                for (int i = 1; i < Cities.Count; i++)
-                    await JSRuntime.InvokeVoidAsync("getDistance", objref, Cities[i - 1].Location, Cities[i].Location);
+                var startPoint = result[0];
+                var endPoint = result[result.Count - 1];
+                var middlePoints = result.Where(x => result.FindIndex(y => y == x) != 0 && result.FindIndex(y => y == x) != result.Count -1).ToList();
+                await JSRuntime.InvokeVoidAsync("showRoute", startPoint, endPoint, middlePoints, false);
             }
             else
-                if (startPoint == null)
-                ShowUnSuccessAlert("You need to select a start point before showing the path");
-            else
-                ShowUnSuccessAlert("You need to select a destination point before showing the path");
+                ShowUnSuccessAlert("You need to select a start point and a destination point before showing the path.");
         }
         protected void AttemptToDeleteRoute()
         {

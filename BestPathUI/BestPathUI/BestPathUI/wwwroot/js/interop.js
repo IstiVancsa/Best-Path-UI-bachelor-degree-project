@@ -26,6 +26,10 @@ function initializeMap() {
 }
 
 function showRoute(origin, destination, wayPoints, optimize) {
+    //console.log(origin);
+    //console.log(destination);
+    //console.log(wayPoints);
+    //console.log(optimize);
     directionsService = new google.maps.DirectionsService();
     directionsRenderer = new google.maps.DirectionsRenderer({
         draggable: true,
@@ -87,8 +91,7 @@ function initializeAutocompletes() {
     });
 }
 
-function getDistance(objref, origin, destination) {
-    lastObjRef = objref;
+function getDistance(origin, destination) {
     var distanceServiceWithHighWays = new google.maps.DistanceMatrixService();
     var distanceServiceWithOutHighWays = new google.maps.DistanceMatrixService();
     distanceServiceWithHighWays.getDistanceMatrix({
@@ -111,11 +114,11 @@ function getDistance(objref, origin, destination) {
 }
 
 function withHighWaysCallback(response, status) {
-    lastObjRef.invokeMethodAsync('SetGoogleDistance', response.rows[0].elements[0]);
+    DotNet.invokeMethodAsync('BestPathUI', 'SetResult', response.rows[0].elements[0]);
 }
 
 function withOutHighWaysCallback(response, status) {
-    lastObjRef.invokeMethodAsync('SetGoogleDistance', response.rows[0].elements[0]);
+    DotNet.invokeMethodAsync('BestPathUI', 'SetResult', response.rows[0].elements[0]);
 }
 
 function enableTextbox(chkId, txtId) {
