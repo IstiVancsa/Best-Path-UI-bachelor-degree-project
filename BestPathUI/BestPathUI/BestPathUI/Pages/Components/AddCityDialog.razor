@@ -38,7 +38,7 @@
 
                         <div class="form-group">
                             <label for="startPoint" class="label-checkbox">StartPoint: </label>
-                            <InputCheckbox id="startPoint" class="form-control checkbox" @bind-Value="@City.StartPoint"></InputCheckbox>
+                            <InputCheckbox id="startPoint" class="form-control checkbox" @bind-Value="@City.StartPoint" @onclick="@SetTimeSelectTitle"></InputCheckbox>
                             <ValidationMessage For="@(() => City.StartPoint)" />
                         </div>
 
@@ -79,17 +79,17 @@
                         @if (this.AStarCity)
                         {
                             <div class="form-group">
-                                <label for="pointArrive">Arriving Time: </label>
-                                <div>
-                                    <InputDate id="pointArrive" class="form-control" @bind-Value="@City.ArrivingTime" disabled></InputDate>
-                                    <select id="hourSelect" @onchange="@HourClicked" disabled>
+                                <label for="pointArrive">@TimeSelectTitle</label>
+                                <div class="h-40">
+                                    <InputDate id="pointArrive" class="form-control form-time-date" @bind-Value="@City.ArrivingTime"></InputDate>
+                                    <select id="hourSelect" @onchange="@HourClicked" class="form-control form-time-hour">
                                         <option value="">Select Hour</option>
                                         @foreach (var hour in new string[] { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23" })
                                         {
                                             <option value="@hour">@hour</option>
                                         }
                                     </select>
-                                    <select id="minuteSelect" @onchange="@MinuteClicked" disabled>
+                                    <select id="minuteSelect" @onchange="@MinuteClicked" class="form-control form-time-minute">
                                         <option value="">Select Minute</option>
                                         @foreach (var minute in new string[] { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59" })
                                         {
@@ -100,8 +100,11 @@
                             </div>
                         }
 
+                    <div class="mt-10">
                         <button type="submit" class="btn btn-primary" @onclick="@SaveDate">Save City</button>
                         <a class="btn btn-outline-primary" style="border-color: #44494e;!important" @onclick="@Close">Close</a>
+                    </div>
+                        
                     </EditForm>
 
                 </div>

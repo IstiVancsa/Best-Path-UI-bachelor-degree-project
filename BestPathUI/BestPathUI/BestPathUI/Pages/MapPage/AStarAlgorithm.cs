@@ -18,12 +18,18 @@ namespace BestPathUI.Pages.MapPage
         public static IJSRuntime JSRuntime { get; set; }
         private static List<AStarCity> Cities { get; set; }
         private static DateTime CurrentTime { get; set; }
+        private static DateTime _backUpTime { get; set; }
         private static int _segmentsCount { get; set; }
+        private static int _timeImportanceCoeficient { get; set; }
+        public static bool NoRouteFound { get; set; } = false;
         private static void Constructor(IList<City> cities, IJSRuntime jSRuntime, DateTime startTime)
         {
             Cities = new List<AStarCity>();
             JSRuntime = jSRuntime;
             CurrentTime = startTime;
+            _backUpTime = startTime;
+            _segmentsCount = 0;
+            _timeImportanceCoeficient = 3;
             foreach (var city in cities)
             {
                 Cities.Add(new AStarCity(city));
@@ -54,13 +60,28 @@ namespace BestPathUI.Pages.MapPage
 
             while (AreNotVisitedCities())
             {
-                var unvisitedCities = GetUnvisitedCities();
+                var unvisitedCities = GetUnvisitedIntermediateCities();
                 var scoredUnvisitedCities = await GetScores(currentCity, unvisitedCities);
-                var highestScoredCity = GetHighestScoredCity(scoredUnvisitedCities);
-                //set highestScoredCity to visited
-                Cities.FirstOrDefault(x => x.City.Id == highestScoredCity.City.City.Id).Visited = true;
-                finalCitiesList.Add(GetLocation(highestScoredCity.City));
-                currentCity = highestScoredCity.City;
+                if(scoredUnvisitedCities.Any(x => x.Score == 0) && _timeImportanceCoeficient < 99)
+                {
+                    ResetAlgorithm();
+                    _timeImportanceCoeficient++;
+                }
+                else
+                    if(!scoredUnvisitedCities.Any(x => x.Score == 0))
+                    {
+                        var highestScoredCity = GetHighestScoredCity(scoredUnvisitedCities);
+                        //set highestScoredCity to visited
+                        Cities.FirstOrDefault(x => x.City.Id == highestScoredCity.City.City.Id).Visited = true;
+                        finalCitiesList.Add(GetLocation(highestScoredCity.City));
+                        currentCity = highestScoredCity.City;
+                    }
+                    else
+                    {
+                        NoRouteFound = true;
+                        return null;
+                    }
+                        
             }
 
             var destinationCity = GetDestinationCity();
@@ -70,9 +91,16 @@ namespace BestPathUI.Pages.MapPage
                 finalCitiesList = null;
             return finalCitiesList;
         }
-        private static List<AStarCity> GetUnvisitedCities()
+
+        private static void ResetAlgorithm()
         {
-            return Cities.Where(x => !x.Visited && !x.IsDestination).ToList();
+            Cities.Where(x => !x.IsOrigin && !x.IsDestination).ToList().ForEach(x => x.Visited = false);
+            CurrentTime = _backUpTime;
+        }
+
+        private static List<AStarCity> GetUnvisitedIntermediateCities()
+        {
+            return Cities.Where(x => !x.Visited && !x.IsDestination && !x.IsOrigin).ToList();
         }
         private static AStarCity GetOriginCity()
         {
@@ -94,10 +122,10 @@ namespace BestPathUI.Pages.MapPage
             while(Result == null)
                 await Task.Delay(25);
             double distanceScore = 1 / (double)Result.distance.value;
-            CurrentTime.AddSeconds(Result.duration.value);
+            CurrentTime = CurrentTime.AddSeconds(Result.duration.value);
             if (CurrentTime > end.City.ArrivingTime)
                 return 0;
-            double timeScore = 1 / (end.City.ArrivingTime.Subtract(CurrentTime).TotalSeconds);
+            double timeScore = 1 / (end.City.ArrivingTime.Subtract(CurrentTime).TotalSeconds) * _timeImportanceCoeficient;
             Result = null;
             return distanceScore + timeScore;
         }
@@ -132,7 +160,7 @@ namespace BestPathUI.Pages.MapPage
         }
         private static bool AreNotVisitedCities()
         {
-            return GetUnvisitedCities().Count > 0;
+            return GetUnvisitedIntermediateCities().Count > 0;
         }
         [JSInvokable]
         public static void SetResult(GoogleDistanceDTO result)

@@ -33,6 +33,7 @@ namespace BestPathUI.Pages.Components
         public bool AStarCity { get; set; }
         private string _hourSelected { get; set; }
         private string _minuteSelected { get; set; }
+        public string TimeSelectTitle { get; set; } = "Arriving Time: ";
 
         protected override void OnInitialized()
         {
@@ -94,6 +95,16 @@ namespace BestPathUI.Pages.Components
                 StartPoint = false,
                 ArrivingTime = DateTime.Now
             };
+            TimeSelectTitle = "Arriving Time: ";
+        }
+
+        protected void SetTimeSelectTitle()
+        {
+            if (!City.StartPoint)
+                this.TimeSelectTitle = "Route Start Time: ";
+            else
+                this.TimeSelectTitle = "Arriving Time: ";
+            StateHasChanged();
         }
 
         protected void SaveDate()

@@ -121,6 +121,37 @@ function withOutHighWaysCallback(response, status) {
     DotNet.invokeMethodAsync('BestPathUI', 'SetResult', response.rows[0].elements[0]);
 }
 
+function getDistanceObjRef(objref,origin, destination) {
+    lastObjRef = objref;
+    var distanceServiceWithHighWays = new google.maps.DistanceMatrixService();
+    var distanceServiceWithOutHighWays = new google.maps.DistanceMatrixService();
+    distanceServiceWithHighWays.getDistanceMatrix({
+        origins: [origin],
+        destinations: [destination],
+        travelMode: google.maps.TravelMode.DRIVING,
+        unitSystem: google.maps.UnitSystem.METRIC,
+        avoidHighways: false,
+        avoidTolls: false
+    }, withHighWaysCallbackObjRef);
+
+    distanceServiceWithOutHighWays.getDistanceMatrix({
+        origins: [origin],
+        destinations: [destination],
+        travelMode: google.maps.TravelMode.DRIVING,
+        unitSystem: google.maps.UnitSystem.METRIC,
+        avoidHighways: true,
+        avoidTolls: false
+    }, withOutHighWaysCallbackObjRef);
+}
+
+function withHighWaysCallbackObjRef(response, status) {
+    lastObjRef.invokeMethodAsync('SetGoogleDistance', response.rows[0].elements[0]);
+}
+
+function withOutHighWaysCallbackObjRef(response, status) {
+    lastObjRef.invokeMethodAsync('SetGoogleDistance', response.rows[0].elements[0]);
+}
+
 function enableTextbox(chkId, txtId) {
     let forceUncked = false;
     if (chkId !== "needsRestaurant") {
@@ -138,17 +169,11 @@ function enableTextbox(chkId, txtId) {
     if (document.getElementById(chkId).checked) {
         if (city_initialized == true && document.getElementById('city_search').value != '') {
             document.getElementById(txtId).disabled = false;
-            document.getElementById("hourSelect").disabled = false;
-            document.getElementById("pointArrive").disabled = false;
-            document.getElementById("minuteSelect").disabled = false;
         }
     }
     else {
         if (!forceUncked) {
             document.getElementById(txtId).disabled = true;
-            document.getElementById("hourSelect").disabled = true;
-            document.getElementById("minuteSelect").disabled = true;
-            document.getElementById("pointArrive").disabled = true;
         }
     }
 }

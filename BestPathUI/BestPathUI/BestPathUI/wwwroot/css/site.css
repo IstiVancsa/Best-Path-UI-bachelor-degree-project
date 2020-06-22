@@ -284,3 +284,37 @@ app {
 .red-text{
     color: red
 }
+
+.create-route .form-check-input{
+      margin-top: 8px;
+}
+
+.create-route .form-check-label {
+    font-size: 20px;
+}
+
+.distance{
+    width: 50%;
+}
+
+.form-time-date {
+    width: 38%;
+    float: left;
+}
+
+.form-time-hour, .form-time-minute {
+    width: 31%;
+    float: left;
+}
+
+.h-40{
+    height: 40px;
+}
+
+.alert-fixed {
+    position: fixed;
+    bottom: 0px;
+    right: 20px;
+    width: 30%;
+    text-align:center;
+}

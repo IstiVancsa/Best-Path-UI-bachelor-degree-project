@@ -128,7 +128,10 @@ namespace BestPathUI.Pages.MapPage
             var endPoint = GetDestinationPointGeoCoordinates();
             var intermediatePoints = GetIntermediatePointsGeoCoordinates();
             if (startPoint != null && endPoint != null)
+            {
                 await JSRuntime.InvokeVoidAsync("showRoute", startPoint, endPoint, intermediatePoints, getOptimizedRoute);
+                await SetTotalDistanceAndDuration(this.Cities.Select(x => x.Location).ToList());
+            }
             else
                 if (startPoint == null)
                 ShowUnSuccessAlert("You need to select a start point before showing the path");
@@ -139,18 +142,27 @@ namespace BestPathUI.Pages.MapPage
         protected async Task ShowAStarRoute()
         {
             await JSRuntime.InvokeVoidAsync("removeDirections");
-
-            var result = await AStarAlgorithm.GetOrderedCities(this.Cities, this.JSRuntime, DateTime.Now);
+            var routeStart = this.Cities.FirstOrDefault(x => x.StartPoint);
+            if (routeStart == null)
+            {
+                ShowUnSuccessAlert("You need to select a start point before showing the path.");
+                return;
+            }
+            var result = await AStarAlgorithm.GetOrderedCities(this.Cities, this.JSRuntime, routeStart.ArrivingTime);
 
             if (result != null)
             {
                 var startPoint = result[0];
                 var endPoint = result[result.Count - 1];
-                var middlePoints = result.Where(x => result.FindIndex(y => y == x) != 0 && result.FindIndex(y => y == x) != result.Count -1).ToList();
+                var middlePoints = result.Where(x => result.FindIndex(y => y == x) != 0 && result.FindIndex(y => y == x) != result.Count - 1).ToList();
                 await JSRuntime.InvokeVoidAsync("showRoute", startPoint, endPoint, middlePoints, false);
+                await SetTotalDistanceAndDuration(result);
             }
             else
-                ShowUnSuccessAlert("You need to select a start point and a destination point before showing the path.");
+                if (AStarAlgorithm.NoRouteFound)
+                    ShowUnSuccessAlert("Couldn't find any route that would satisfy your needs, sorry.");
+                else
+                    ShowUnSuccessAlert("You need to select a destination point before showing the path.");
         }
         protected void AttemptToDeleteRoute()
         {
@@ -351,6 +363,13 @@ namespace BestPathUI.Pages.MapPage
                     finalCoordinates.Add(city.Location);
             }
             return finalCoordinates;
+        }
+
+        public async Task SetTotalDistanceAndDuration(IList<LocationDTO> citiesLocation)
+        {
+            var objref = DotNetObjectReference.Create(this);
+            for (int i = 1; i < citiesLocation.Count; i++)
+                await JSRuntime.InvokeVoidAsync("getDistanceObjRef", objref, citiesLocation[i - 1], citiesLocation[i]);
         }
 
         [JSInvokable]

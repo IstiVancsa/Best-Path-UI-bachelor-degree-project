@@ -23,12 +23,15 @@
 <body>
     <div class="container">
         <div class="page-title">Best Path</div>
-        <div>
-            <label for="needsAStarRoute" class="label-checkbox">Use A* to create route: </label>
-            <input type="checkbox" id="needsAStarRoute" class="checkbox" @bind="@AStarRoute" />
+
+        <div class="form-check create-route">
+            <input class="form-check-input" type="checkbox" name="exampleRadios" id="needsAStarRoute" @bind="@AStarRoute">
+            <label class="form-check-label" for="needsAStarRoute">
+                Use A* to create route
+            </label>
         </div>
-        <p>Distance: @ProcessedRouteDistance</p>
-        <p>Duration: @ProcessedRouteDuration</p>
+        <div class="distance mt-10">Distance: @ProcessedRouteDistance</div>
+        <div class="distance">Duration: @ProcessedRouteDuration</div>
         <div id="map_canvas" class="canvas"></div>
         <div class="row page-btns mt-20 mb-20">
             <div class="col-md-12 text-center">
@@ -139,14 +142,14 @@
 
         @if (ShowSuccessAlert_Prop)
         {
-            <div class="alert alert-success" role="alert">
+            <div class="alert alert-success alert-fixed" role="alert">
                 @SuccessAlertMessage
             </div>
         }
 
         @if (ShowUnSuccessAlert_Prop)
         {
-            <div class="alert alert-danger" role="alert">
+            <div class="alert alert-danger  alert-fixed" role="alert">
                 @UnSuccessAlertMessage
             </div>
         }
