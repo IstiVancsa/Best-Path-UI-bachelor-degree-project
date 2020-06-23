@@ -123,6 +123,8 @@ namespace BestPathUI.Pages.MapPage
 
         protected async Task ShowRoute(bool getOptimizedRoute = false)
         {
+            this.RouteDuration = 0;
+            this.RouteDistance = 0;
             await JSRuntime.InvokeVoidAsync("removeDirections");
             var startPoint = GetStartPointGeoCoordinates();
             var endPoint = GetDestinationPointGeoCoordinates();
@@ -141,6 +143,8 @@ namespace BestPathUI.Pages.MapPage
 
         protected async Task ShowAStarRoute()
         {
+            this.RouteDuration = 0;
+            this.RouteDistance = 0;
             await JSRuntime.InvokeVoidAsync("removeDirections");
             var routeStart = this.Cities.FirstOrDefault(x => x.StartPoint);
             if (routeStart == null)

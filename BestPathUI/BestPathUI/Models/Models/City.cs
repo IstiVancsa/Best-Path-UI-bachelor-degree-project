@@ -59,5 +59,12 @@ namespace Models.Models
             UserId = "";
             ArrivingTime = DateTime.Now;
         }
+        public void SetLocation()
+        {
+            if (this.NeedsMuseum)
+                this.Location = this.SelectedMuseum.geometry.location;
+            if (this.NeedsRestaurant)
+                this.Location = this.SelectedRestaurant.geometry.location;
+        }
     }
 }

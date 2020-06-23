@@ -38,11 +38,15 @@ namespace Services
 
         public async Task<GetRoutesResultDTO> GetRoutes(string filters)
         {
-            return (await this.ReturnGetHttp<GetRoutesResultDTO>(this.UrlApi + "GetRoutes/" + filters));
+            var result = await this.ReturnGetHttp<GetRoutesResultDTO>(this.UrlApi + "GetRoutes/" + filters);
+            result.SetLocation();
+            return result;
         }
 
         public async Task<bool> SavePathAsync(IEnumerable<City> cities)
         {
+            foreach (var city in cities)
+                city.SetLocation();
             bool result = true;
             using (var client = new HttpClient())
             {

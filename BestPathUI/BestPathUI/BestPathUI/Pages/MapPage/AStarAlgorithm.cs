@@ -13,6 +13,7 @@ namespace BestPathUI.Pages.MapPage
     public static class AStarAlgorithm
     {
         public static GoogleDistanceDTO Result { get; set; } = null;
+        private static Dictionary<LocationDTO, Dictionary<LocationDTO, GoogleDistanceDTO>>  MemorizationDictionary { get; set; }
         public static GoogleDistanceDTO _lastResult { get; set; } = null;
         [Inject]
         public static IJSRuntime JSRuntime { get; set; }
@@ -30,6 +31,7 @@ namespace BestPathUI.Pages.MapPage
             _backUpTime = startTime;
             _segmentsCount = 0;
             _timeImportanceCoeficient = 3;
+            MemorizationDictionary = new Dictionary<LocationDTO, Dictionary<LocationDTO, GoogleDistanceDTO>>(new LocationDTOComparer());
             foreach (var city in cities)
             {
                 Cities.Add(new AStarCity(city));
@@ -155,6 +157,12 @@ namespace BestPathUI.Pages.MapPage
         }
         private async static Task<GoogleDistanceDTO> GetTravelInfo(LocationDTO start, LocationDTO end)
         {
+            if (MemorizationDictionary.ContainsKey(start))
+                if (MemorizationDictionary[start].ContainsKey(end))
+                {
+                    Result = MemorizationDictionary[start][end];
+                    return MemorizationDictionary[start][end];
+                }
             await JSRuntime.InvokeVoidAsync("getDistance", start, end);
             return Result;
         }
@@ -163,7 +171,7 @@ namespace BestPathUI.Pages.MapPage
             return GetUnvisitedIntermediateCities().Count > 0;
         }
         [JSInvokable]
-        public static void SetResult(GoogleDistanceDTO result)
+        public static void SetResult(GoogleDistanceDTO result, LocationDTO start, LocationDTO end)
         {
             if (_segmentsCount % 2 == 0)
                 _lastResult = result;
@@ -173,6 +181,9 @@ namespace BestPathUI.Pages.MapPage
                     Result = result;
                 else
                     Result = _lastResult;
+                if (!MemorizationDictionary.ContainsKey(start))
+                    MemorizationDictionary[start] = new Dictionary<LocationDTO, GoogleDistanceDTO>(new LocationDTOComparer());
+                MemorizationDictionary[start][end] = Result;
             }
             _segmentsCount++;
         }

@@ -4,6 +4,8 @@ var marker;
 var directionsService;
 var directionsRenderer;
 var lastObjRef;
+var lastOrigin;
+var lastDestination;
 
 function createMap() {
     google.maps.event.addDomListener(window, 'load', initializeMap);
@@ -92,6 +94,8 @@ function initializeAutocompletes() {
 }
 
 function getDistance(origin, destination) {
+    lastOrigin = origin;
+    lastDestination = destination;
     var distanceServiceWithHighWays = new google.maps.DistanceMatrixService();
     var distanceServiceWithOutHighWays = new google.maps.DistanceMatrixService();
     distanceServiceWithHighWays.getDistanceMatrix({
@@ -114,11 +118,11 @@ function getDistance(origin, destination) {
 }
 
 function withHighWaysCallback(response, status) {
-    DotNet.invokeMethodAsync('BestPathUI', 'SetResult', response.rows[0].elements[0]);
+    DotNet.invokeMethodAsync('BestPathUI', 'SetResult', response.rows[0].elements[0], lastOrigin, lastDestination);
 }
 
 function withOutHighWaysCallback(response, status) {
-    DotNet.invokeMethodAsync('BestPathUI', 'SetResult', response.rows[0].elements[0]);
+    DotNet.invokeMethodAsync('BestPathUI', 'SetResult', response.rows[0].elements[0], lastOrigin, lastDestination);
 }
 
 function getDistanceObjRef(objref,origin, destination) {
@@ -145,10 +149,18 @@ function getDistanceObjRef(objref,origin, destination) {
 }
 
 function withHighWaysCallbackObjRef(response, status) {
+    if (response === null) {
+        console.log("withHighWaysCallbackObjRef");
+        console.log(status);
+    }
     lastObjRef.invokeMethodAsync('SetGoogleDistance', response.rows[0].elements[0]);
 }
 
 function withOutHighWaysCallbackObjRef(response, status) {
+    if (response === null) {
+        console.log("withOutHighWaysCallbackObjRef");
+        console.log(status);
+    }
     lastObjRef.invokeMethodAsync('SetGoogleDistance', response.rows[0].elements[0]);
 }
 
