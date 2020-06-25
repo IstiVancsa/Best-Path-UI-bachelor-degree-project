@@ -67,6 +67,8 @@ namespace BestPathUI.Pages.MapPage
                 if(scoredUnvisitedCities.Any(x => x.Score == 0) && _timeImportanceCoeficient < 99)
                 {
                     ResetAlgorithm();
+                    finalCitiesList.Clear();
+                    finalCitiesList.Add(GetLocation(originCity));
                     _timeImportanceCoeficient++;
                 }
                 else
@@ -127,7 +129,8 @@ namespace BestPathUI.Pages.MapPage
             CurrentTime = CurrentTime.AddSeconds(Result.duration.value);
             if (CurrentTime > end.City.ArrivingTime)
                 return 0;
-            double timeScore = 1 / (end.City.ArrivingTime.Subtract(CurrentTime).TotalSeconds) * _timeImportanceCoeficient;
+            double timeScore = (1 / 
+            (end.City.ArrivingTime.Subtract(CurrentTime).TotalSeconds)) * _timeImportanceCoeficient;
             Result = null;
             return distanceScore + timeScore;
         }
