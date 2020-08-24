@@ -28,10 +28,6 @@ function initializeMap() {
 }
 
 function showRoute(origin, destination, wayPoints, optimize) {
-    //console.log(origin);
-    //console.log(destination);
-    //console.log(wayPoints);
-    //console.log(optimize);
     directionsService = new google.maps.DirectionsService();
     directionsRenderer = new google.maps.DirectionsRenderer({
         draggable: true,

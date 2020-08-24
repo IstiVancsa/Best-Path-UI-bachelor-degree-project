@@ -132,7 +132,8 @@ namespace BestPathUI.Pages.MapPage
             if (startPoint != null && endPoint != null)
             {
                 await JSRuntime.InvokeVoidAsync("showRoute", startPoint, endPoint, intermediatePoints, getOptimizedRoute);
-                await SetTotalDistanceAndDuration(this.Cities.Select(x => x.Location).ToList());
+                if(!getOptimizedRoute)
+                    await SetTotalDistanceAndDuration(this.Cities.Select(x => x.Location).ToList());
             }
             else
                 if (startPoint == null)
@@ -311,7 +312,7 @@ namespace BestPathUI.Pages.MapPage
             }
             else
                 if (this.RestaurantSearches.Count == 0 && map_AddCity.City.NeedsRestaurant)
-                ShowUnSuccessAlert("Sorry! We couldn't find any restaurants in your area");
+                    ShowUnSuccessAlert("Sorry! We couldn't find any restaurants in your area");
             ShowSuccessAlert("The city was successfully added to the route!");
         }
 
